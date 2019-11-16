@@ -1,0 +1,31 @@
+# Install the Google Cloud SDK by following the instructions on https://cloud.google.com/sdk/docs/
+# Then intitialize it by calling
+gcloud init
+Y
+
+# Open the displayed link into your browser and paste the verification code into th console
+
+[Verification code]
+
+# Pick an existing project or create a new one. If you choose to create a new project, you also have to give it a name
+
+[Project choice]
+
+# Now that everything is initialized, start an instance with
+gcloud compute instances create my-instance --machine-type f1-micro --zone europe-west3-a
+
+# Connect to it
+gcloud compute ssh my-instance --zone europe-west3-a
+
+[Set SSH passphrase on first access]
+
+[Enter SSH passphrase]
+
+exit
+
+
+# Stop and delete it
+gcloud compute instances stop my-instance --zone europe-west3-a
+
+gcloud compute instances delete my-instance --zone europe-west3-a
+Y
