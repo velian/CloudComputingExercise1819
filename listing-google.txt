@@ -3,7 +3,7 @@
 gcloud init
 Y
 
-# Open the displayed link into your browser and paste the verification code into th console
+# Open the displayed link into your browser and paste the verification code into the console
 
 [Verification code]
 

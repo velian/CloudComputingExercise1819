@@ -1,0 +1,41 @@
+# Install the AWS Command Line Interface by following the instructions on https://docs.aws.amazon.com/de_de/cli/latest/userguide/cli-chap-install.html
+# Don't forget to add the AWS executable to your PATH
+
+# Authenticate yourself by copying the credentials displayed on AWS educate starter website into ~/.aws/credentials
+# This is different for normal AWS accounts
+
+# Create a key pair for authentication
+aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pem
+
+# Set up the VPC (Virtual Private Cloud) for your instance as well as a subnet
+aws ec2 create-vpc --cidr-block 10.0.0.0/16
+aws ec2 create-subnet --vpc-id [VPC-ID] --cidr-block 10.0.1.0/24
+
+# Connect the subnet to the internet
+aws ec2 create-internet-gateway
+aws ec2 attach-internet-gateway --vpc-id [VPC-ID] --internet-gateway-id [Gateway-ID]
+aws ec2 create-route-table --vpc-id [VPC-ID]
+aws ec2 create-route --route-table-id [RT-ID] --destination-cidr-block 0.0.0.0/0 --gateway-id [Gateway-ID]
+aws ec2 associate-route-table  --subnet-id [Subnet-ID] --route-table-id [RT-ID]
+
+# Change the settings of VPC and subnet such that instances automatically get a public IP and DNS
+aws ec2 modify-subnet-attribute --subnet-id [Subnet-ID] --map-public-ip-on-launch
+aws ec2 modify-vpc-attribute --vpc-id [VPC-ID] --enable-dns-hostnames
+
+# Create a security group for your instance
+aws ec2 create-security-group --group-name my-sg --description "My security group" --vpc-id [VPC-ID]
+
+# Open TCP port 22 to allow SSH access
+aws ec2 authorize-security-group-ingress --group-id [Group-ID] --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+# Start a t2.nano instance with Amazon2-Linux
+aws ec2 run-instances --image-id ami-00dc79254d0461090 --count 1 --instance-type t2.nano --key-name MyKeyPair --security-group-ids [SG-ID] --subnet-id [Subnet-ID] --associate-public-ip-address
+
+# Get the public DNS name of instance
+aws ec2 describe-instances --instance-ids [Instance-ID] --query 'Reservations[].Instances[].PublicDnsName'
+
+# Connect to the instance per SSH
+ssh -i MyKeyPair.pem ec2-user@[DNS-Name]
+
+# After you quit, terminate the instance
+aws ec2 terminate-instances --instance-ids [Instance-ID]
