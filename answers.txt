@@ -1,0 +1,18 @@
+CPU Benchmarks
+
+1. Linpack Sh merely compiles and executes linpack and provides an output. Linpack.sh calculates the kflops based on the time the machine requires to solve a 1000x1000 array as a system of linear ecuations
+
+2. Linpack measures FLOPS or floating point operations per second. I would expect Linpack Benchmarks run on paravirtualized hardware to run faster than other emulation methods. This is because Paravirtualization allows for better hardware performance.
+
+3. Reasons: Heavy load on target servers, no paravirtualization, they shut us off.
+
+Memory benchmark
+
+1. Memsweep works by measuring the time it takes for the machine to access and make changes to a very large array. Size is 8096 * 4096, size*10 changes are made, changes are made based on contents of array so it is accessed 2 times per change. 
+
+2. 
+
+
+Disk Benchmark
+
+1. Data moved from one plaece to another (Different underlying generations of hardware)
