@@ -1,3 +1,5 @@
+cd /home/ec2-user/AmazonBenchmarkingPack/
+
 FILE="cpu.csv"
 if [ ! -e $FILE ] ; then
 	touch $FILE
