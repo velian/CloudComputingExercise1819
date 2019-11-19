@@ -1,3 +1,4 @@
+#!/bin/bash
 start_time=$(date +%s%N)
 dd if=/tmp/test.bin of=/dev/null bs=250MB count=4 &> /dev/null
 elapsed_time=$(($(date +%s%N)-$start_time))

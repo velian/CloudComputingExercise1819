@@ -1,3 +1,4 @@
+#!/bin/bash
 cd /home/ec2-user/AmazonBenchmarkingPack/
 
 FILE="cpu.csv"
