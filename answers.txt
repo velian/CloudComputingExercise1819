@@ -1,18 +1,20 @@
 CPU Benchmarks
 
-1. Linpack Sh merely compiles and executes linpack and provides an output. Linpack.sh calculates the kflops based on the time the machine requires to solve a 1000x1000 array as a system of linear ecuations
+1. Linpack.sh merely compiles and executes linpack.c and provides an output. Linpack.c calculates the kFLOPS based on the time the machine requires to solve a 1000x1000 array as a system of linear ecuations
 
-2. Linpack measures FLOPS or floating point operations per second. I woudl not expect paravirtualization to affect Linpack as no privileged instructions are run.
+2. Linpack measures FLOPS or floating point operations per second. We would not expect paravirtualization to affect Linpack as no privileged instructions are run.
 
-3. Reasons: Heavy load on target servers, no paravirtualization, they shut us off.
+3. Reasons: The EC2 instance shows about 50% better performance than the Google Cloud instance. This was expected since the Google Cloud f1-micro instance only get 0.2 vCPUs which is less than the EC2 instance provides.
 
 Memory benchmark
 
 1. Memsweep works by measuring the time it takes for the machine to access and make changes to a very large array. Size is 8096 * 4096, size*10 changes are made, changes are made based on contents of array so it is accessed 2 times per change. I expect virtualization to affect memsweep as accessing memory has to be indirected.
 
-2. 
+2. The disparities between EC2 and Google Cloud are a bit surprising, the instance specification doesn't show anything that supports these differences. In the end we also don't know much about the exact hardware used, so perhaps EC2 uses slower memory?
 
 
 Disk Benchmark
 
-1. Data moved from one place to another (Different underlying generations of hardware)
+1. Again there are surprising disparities between EC2 and Google Cloud regarding random access performance. It seems the two vendors organize random disk access in very different ways that dramatically affect performance.
+
+2. Generally, sequential disk access is a lot faster than random access, because for random access the disk has to seek after each access, which it doesn't have to when doing sequential reads/writes.
