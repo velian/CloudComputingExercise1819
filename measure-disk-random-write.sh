@@ -1,3 +1,4 @@
+#!/bin/bash
 FIOOUTFILE="fiowrite.txt"
 if [ ! -e $FIOOUTFILE ] ; then
 	touch "fiowrite.txt"
