@@ -1,6 +1,6 @@
 CPU Benchmarks
 
-1. Linpack.sh merely compiles and executes linpack.c and provides an output. Linpack.c calculates the kFLOPS based on the time the machine requires to solve a 1000x1000 array as a system of linear ecuations
+1. Linpack.sh merely compiles and executes linpack.c and provides an output. Linpack.c calculates the kFLOPS based on the time the machine requires to solve a 1000x1000 array as a system of linear equations
 
 2. Linpack measures FLOPS or floating point operations per second. We would not expect paravirtualization to affect Linpack as no privileged instructions are run.
 
