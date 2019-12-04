@@ -1,1 +1,26 @@
-listing.txt
+#install qemu
+sudo apt-get install qemu
+y
+
+#install docker
+sudo apt-get install docker
+
+#install git
+sudo apt-get install git
+
+#install make
+sudo apt-get install make
+
+#install build tools
+sudo apt-get install build-essential
+y
+
+#clone and build rumprun (THIS FAILED)
+git clone http://repo.rumpkernel.org/rumprun
+cd rumprun
+git submodule update --init
+CC=cc ./build-rr.sh hw
+
+#put rumprun into path (THIS FAILED)
+export PATH="${PATH}:$(pwd)/rumprun/bin"
+
