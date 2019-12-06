@@ -1,0 +1,27 @@
+# We are using a Google Cloud instance as host, which means we have to enable nested virtualization first
+
+# Create a debian 10 image with the necessary license
+gcloud compute disks create disk1 --image-project debian-cloud --image-family debian-10 --zone us-central1-b
+gcloud compute images create nested-vm-image --source-disk disk1 --source-disk-zone us-central1-b --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
+
+# Create an instance based on that image
+# --min-cpu-platform "Intel Haswell" is needed to ensure virtualization support
+gcloud compute instances create example-nested-vm --zone us-central1-b --min-cpu-platform "Intel Haswell" --image nested-vm-image
+
+# Conncect to the instance and install qemu
+gcloud compute ssh example-nested-vm
+sudo apt-get update && sudo apt-get install qemu-kvm -y
+
+# Download a debian 10 image
+wget https://cdimage.debian.org/cdimage/openstack/current/debian-10.2.0-openstack-amd64.qcow2
+
+# This image is meant to be used with openstack, so we need to make some adjustmensts to use it
+# Install libguestfs-tools, which contains the virt-customize command
+sudo apt-get -y install libguestfs-tools
+
+# The tool needs access to /dev/kvm
+chmod 0666 /dev/kvm
+
+# Modify the image's root password (the image is meant to be accessed per SSH, so it doesn't have a default password)
+# Also uninstall the cloud-init package because we don't need it
+virt-customize -a debian-10.2.0-openstack-amd64.qcow2 --root-password password:password --uninstall cloud-init
