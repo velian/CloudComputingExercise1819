@@ -8,20 +8,46 @@ gcloud compute images create nested-vm-image --source-disk disk1 --source-disk-z
 # --min-cpu-platform "Intel Haswell" is needed to ensure virtualization support
 gcloud compute instances create example-nested-vm --zone us-central1-b --min-cpu-platform "Intel Haswell" --image nested-vm-image
 
-# Conncect to the instance and install qemu
+# Conncect to the instance
 gcloud compute ssh example-nested-vm
-sudo apt-get update && sudo apt-get install qemu-kvm -y
 
-# Download a debian 10 image
-wget https://cdimage.debian.org/cdimage/openstack/current/debian-10.2.0-openstack-amd64.qcow2
+# Install qemu and libguestfs-tools (you might have to select a keyboard layout)
+sudo apt-get update && sudo apt-get install qemu-kvm libguestfs-tools -y
 
-# This image is meant to be used with openstack, so we need to make some adjustmensts to use it
-# Install libguestfs-tools, which contains the virt-customize command
-sudo apt-get -y install libguestfs-tools
+# Create a file that contains your password for the VM
+echo [your password] > password.txt
 
-# The tool needs access to /dev/kvm
-chmod 0666 /dev/kvm
+# Create the image with the password
+sudo virt-builder debian-10 \
+--size=10G \
+--format qcow2 -o debian10.qcow2 \
+--hostname debian10 \
+--network \
+--root-password file:password.txt
 
-# Modify the image's root password (the image is meant to be accessed per SSH, so it doesn't have a default password)
-# Also uninstall the cloud-init package because we don't need it
-virt-customize -a debian-10.2.0-openstack-amd64.qcow2 --root-password password:password --uninstall cloud-init
+# We need to set up a bridge so the VM can communicate with the host
+# Install required packages
+sudo apt-get install uml-utilities qemu-kvm bridge-utils virtinst libvirt-daemon-system libvirt-clients -y
+
+# Start default network
+sudo virsh net-start default
+
+# Create the bridge
+sudo tunctl -t tap0
+sudo ifconfig tap0 up
+sudo brctl addif virbr0 tap0
+
+
+# Start a screen session so you can easily switch between guest and host (press enter if the confirmation screen comes up)
+screen
+
+# Start the VM with access to the bridge (add -enable-kvm to enable KVM support)
+# Login as root with the password you just set
+sudo qemu-system-x86_64 -m 512 -net nic -net tap,ifname=tap0,script=no -serial mon:stdio -nographic debian10.qcow2
+
+# Start up the VM's network access
+ip link set dev ens3 up
+dhclient -v ens3
+
+# Leave the screen session with CTRL+A, CTRL+D
+# You can return to it with screen -r
