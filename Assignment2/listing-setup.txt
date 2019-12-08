@@ -1,12 +1,14 @@
+# QEMU setup
+
 # We are using a Google Cloud instance as host, which means we have to enable nested virtualization first
 
 # Create a debian 10 image with the necessary license
-gcloud compute disks create disk1 --image-project debian-cloud --image-family debian-10 --zone us-central1-b
-gcloud compute images create nested-vm-image --source-disk disk1 --source-disk-zone us-central1-b --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
+gcloud compute disks create disk1 --image-project debian-cloud --image-family debian-10 --zone europe-west3-a
+gcloud compute images create nested-vm-image --source-disk disk1 --source-disk-zone europe-west3-a --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
 
 # Create an instance based on that image
 # --min-cpu-platform "Intel Haswell" is needed to ensure virtualization support
-gcloud compute instances create example-nested-vm --zone us-central1-b --min-cpu-platform "Intel Haswell" --image nested-vm-image
+gcloud compute instances create example-nested-vm --zone europe-west3-a --min-cpu-platform "Intel Haswell" --image nested-vm-image
 
 # Conncect to the instance
 gcloud compute ssh example-nested-vm
@@ -49,5 +51,49 @@ sudo qemu-system-x86_64 -m 512 -net nic -net tap,ifname=tap0,script=no -serial m
 ip link set dev ens3 up
 dhclient -v ens3
 
+# Now you can see your IP with
+ip adress show
+
 # Leave the screen session with CTRL+A, CTRL+D
 # You can return to it with screen -r
+
+
+# Docker setup
+
+# Apparently apt-get install docker.io only gets you an out-of-date version, so we are going to follow the official instructions
+# Enable apt to download packages over HTTPS
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+	
+
+# Add Docker's GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# Add the docker repository
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+   
+# Install docker
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+# Start a screen session
+screen 
+
+# Start a debian 10 container (it will be pulled automatically if not already present)
+sudo docker run --rm -ti debian:10
+
+# Communication with the host should work out of the box here, you can again get your IP with
+ip adress show
+
+# This container is very minimal, so we might have to install the packages we need for the benchmarks
+sudo apt-get update
+
+# Install whatever you need
