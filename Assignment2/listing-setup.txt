@@ -45,7 +45,7 @@ screen
 
 # Start the VM with access to the bridge (add -enable-kvm to enable KVM support)
 # Login as root with the password you just set
-sudo qemu-system-x86_64 -m 512 -net nic -net tap,ifname=tap0,script=no -serial mon:stdio -nographic debian10.qcow2
+sudo qemu-system-x86_64 -m 2048 -net nic -net tap,ifname=tap0,script=no -serial mon:stdio -nographic debian10.qcow2
 
 # Start up the VM's network access
 ip link set dev ens3 up
