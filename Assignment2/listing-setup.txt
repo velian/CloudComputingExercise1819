@@ -61,6 +61,10 @@ ip adress show
 # Leave the screen session with CTRL+A, CTRL+D
 # You can return to it with screen -r
 
+# If you set up the VM this way, it will be reachable from the host, but it won't have internet access
+# If you need that (to install packages for examples), start the Vm with
+sudo qemu-system-x86_64 -m 2048 -nic user -net tap,ifname=tap0,script=no -serial mon:stdio -nographic debian10.qcow2
+
 
 # Docker setup
 
