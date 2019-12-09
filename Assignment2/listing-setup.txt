@@ -6,12 +6,15 @@
 gcloud compute disks create disk1 --image-project debian-cloud --image-family debian-10 --zone europe-west3-a
 gcloud compute images create nested-vm-image --source-disk disk1 --source-disk-zone europe-west3-a --licenses "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
 
+# Now you can delete the disk again
+gcloud compute disks delete disk1 --zone europe-west3-a
+
 # Create an instance based on that image
-# --min-cpu-platform "Intel Haswell" is needed to ensure virtualization support
-gcloud compute instances create example-nested-vm --zone europe-west3-a --min-cpu-platform "Intel Haswell" --image nested-vm-image
+# All CPU generations availble in the europe-west3-a zone support nested VMs, but in other --min-cpu-platform "Intel Haswell" might be needed to ensure virtualization support
+gcloud compute instances create nested-vm --zone europe-west3-a --image nested-vm-image
 
 # Conncect to the instance
-gcloud compute ssh example-nested-vm
+gcloud compute ssh nested-vm
 
 # Install qemu and libguestfs-tools (you might have to select a keyboard layout)
 sudo apt-get update && sudo apt-get install qemu-kvm libguestfs-tools -y
@@ -40,7 +43,8 @@ sudo ifconfig tap0 up
 sudo brctl addif virbr0 tap0
 
 
-# Start a screen session so you can easily switch between guest and host (press enter if the confirmation screen comes up)
+# Install screen and start a screen session so you can easily switch between guest and host (press enter if the confirmation screen comes up)
+sudo apt-get install screen
 screen
 
 # Start the VM with access to the bridge (add -enable-kvm to enable KVM support)
@@ -56,6 +60,10 @@ ip adress show
 
 # Leave the screen session with CTRL+A, CTRL+D
 # You can return to it with screen -r
+
+# If you set up the VM this way, it will be reachable from the host, but it won't have internet access
+# If you need that (to install packages for examples), start the Vm with
+sudo qemu-system-x86_64 -m 2048 -nic user -net tap,ifname=tap0,script=no -serial mon:stdio -nographic debian10.qcow2
 
 
 # Docker setup
