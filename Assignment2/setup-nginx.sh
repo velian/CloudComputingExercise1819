@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Execute this script on the server
+
 # Remove the default stuff
 rm /etc/nginx/sites-available/default
 rm /etc/nginx/sites-enabled/default
