@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Put the config file in the right folder
 cp ./benchmark.com /etc/nginx/sites-available/benchmark.com
 ln -s /etc/nginx/sites-available/benchmark.com /etc/nginx/sites-enabled/benchmark.com
