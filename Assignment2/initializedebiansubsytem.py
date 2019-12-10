@@ -11,5 +11,3 @@ def initializeDebianSubsytem(subdirectory):
 	cmd = "sudo debootstrap stable " + subdirectory + "/ http://deb.debian.org/debian/"
 	returned_value = subprocess.call(cmd, shell=True, stdout=devnull)
 	print("script done")
-
-testdebootsrap()
