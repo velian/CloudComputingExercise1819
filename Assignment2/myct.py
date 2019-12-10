@@ -39,8 +39,8 @@ def map(container_path, host_path, target_path):
     help_option_names=[],
 ))
 @click.argument('container_path', type=click.Path(exists=True))
-@click.option('--namespace', '-n', help='The namespace the process will join.', type=click.Path(exists=True))
-@click.option('--limit', '-l', help='', type=click.Path(exists=True))
+@click.option('--namespace', '-n', help='The namespace the process will join.')
+@click.option('--limit', '-l', help='Resource usage limit')
 @click.argument('executable', type=click.Path(exists=True))
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
 def run(container_path, namespace, limit, executable, args):
