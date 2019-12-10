@@ -1,5 +1,6 @@
 import os
 import click
+from initializedebiansubsytem import initializeDebianSubsytem
 
 
 @click.group()
@@ -11,6 +12,7 @@ def cli():
 @click.argument('container_path', type=click.Path(exists=False))
 def init(container_path):
     click.echo(f'container_path: {container_path}')
+    initializeDebianSubsytem(container_path)
 
 
 @cli.command()
