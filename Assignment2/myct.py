@@ -12,8 +12,14 @@ def cli():
 @cli.command()
 @click.argument('container_path', type=click.Path(exists=False))
 def init(container_path):
-    cmd = "sudo debootstrap stable " + container_path + "/ http://deb.debian.org/debian/"
-    _ = subprocess.call(cmd, shell=True)
+    create_command = "sudo debootstrap stable " + container_path + "/ http://deb.debian.org/debian/"
+    mount_command = f'sudo mount --bind {container_path}/proc {container_path}/proc'
+    make_private_command = f'sudo mount --make-private {container_path}/proc'
+    
+    _ = subprocess.call(create_command, shell=True)
+    _ = subprocess.call(mount_command, shell=True)
+    _ = subprocess.call(make_private_command, shell=True)
+
     print("Container initialized")
 
 
@@ -46,6 +52,8 @@ def map(container_path, host_path, target_path):
 def run(container_path, namespace, limit, executable, args):
     click.echo(
         f'container_path: {container_path}, namespace: {namespace}, limit: {limit}, executable: {executable}, args: {args}')
+
+    # sudo chroot ./test /bin/bash
 
 
 if __name__ == '__main__':
