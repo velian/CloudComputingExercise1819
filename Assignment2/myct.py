@@ -15,7 +15,7 @@ def init(container_path):
     create_command = "sudo debootstrap stable " + container_path + "/ http://deb.debian.org/debian/"
     mount_command = f'sudo mount --bind {container_path}/proc {container_path}/proc'
     make_private_command = f'sudo mount --make-private {container_path}/proc'
-    
+
     _ = subprocess.call(create_command, shell=True)
     _ = subprocess.call(mount_command, shell=True)
     _ = subprocess.call(make_private_command, shell=True)
@@ -37,7 +37,7 @@ def map(container_path, host_path, target_path):
     _ = subprocess.call(mkdir_command, shell=True)
     _ = subprocess.call(command, shell=True)
 
-    print("Map complete") #./test /etc /etc2
+    print("Map complete")
 
 
 @cli.command(context_settings=dict(
@@ -53,7 +53,12 @@ def run(container_path, namespace, limit, executable, args):
     click.echo(
         f'container_path: {container_path}, namespace: {namespace}, limit: {limit}, executable: {executable}, args: {args}')
 
-    # sudo chroot ./test /bin/bash
+    # @TODO: Create cgroup
+    # echo $$ > tasks
+    # sudo unshare -p -f --mount-proc=$PWD/test/proc chroot ./test /bin/bash
+    # sudo nsenter --pid=/proc/{PID}/ns/{kind} \
+    #     unshare -f --mount-proc=$PWD/rootfs/proc \
+    #     chroot rootfs /bin/bash
 
 
 if __name__ == '__main__':
