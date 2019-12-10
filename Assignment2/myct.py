@@ -1,3 +1,4 @@
+import os
 import click
 
 
@@ -18,6 +19,15 @@ def init(container_path):
 @click.argument('target_path', type=click.Path(exists=False))
 def map(container_path, host_path, target_path):
     click.echo(f'container_path: {container_path}, host_path: {host_path}, target_path: {target_path}')
+    complete_path = os.path.join(container_path, target_path)
+
+    mkdir_command = f'sudo mkdir -p {complete_path}'
+    command = f'sudo mount --rbind -o ro {host_path} {complete_path}'
+
+    
+    # sudo mkdir -p /www/data
+    # sudo mount --rbind -o ro /etc/ ./test/
+    # sudo umount ./test
 
 
 @cli.command(context_settings=dict(
