@@ -39,27 +39,19 @@ void calcsubcomponent(int low_value, int high_value){
 			if (pid == 0){
 				low_value = ((low_value + high_value)/2) + 1;
 				dup2(pip2[1], 1);
-				//close(pip[0]);
-				//printf("created 2 fork using values %d and %d \n", low_value, high_value);
 				calcsubcomponent(low_value, high_value);
 			}
 		}else{
 			high_value = ((low_value + high_value)/2);
 			dup2(pip1[1], 1);
-			//close(pip[0]);
-			//printf("created 1 fork using values %d and %d \n", low_value, high_value);
 			calcsubcomponent(low_value, high_value);
 		}
 
-		//printf("entering wait \n");
 		while ((wpid = wait(&status)) > 0 );
-		//printf("wait termination \n");
 		read(pip1[0], buf, sizeof buf);
 		result = atoi(buf);
-		//printf("read from buffer %d \n", result);
 		read(pip2[0], buf, sizeof buf);
 		result = result + atoi(buf);
-		//printf("addition from buffer %d \n");
 		printf("%d\n", result);
 		exit(0);
 
