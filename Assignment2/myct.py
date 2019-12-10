@@ -12,9 +12,6 @@ def cli():
 @cli.command()
 @click.argument('container_path', type=click.Path(exists=False))
 def init(container_path):
-    cmd = "mkdir " + container_path
-    _ = subprocess.call(cmd, shell=True)
-
     cmd = "sudo debootstrap stable " + container_path + "/ http://deb.debian.org/debian/"
     _ = subprocess.call(cmd, shell=True)
     print("Container initialized")
