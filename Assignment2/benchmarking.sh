@@ -51,6 +51,6 @@ RESULT=$(./measure-fork.sh)
 DATE=$(date +%s)
 echo $DATE,$RESULT >> $FILE
 
-$LOOP=$[$LOOP+1]
+LOOP=$[$LOOP+1]
 
 done
