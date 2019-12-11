@@ -2,7 +2,7 @@
 #cd /home/ec2-user/AmazonBenchmarkingPack/
 $LOOP="0"
 
-while [$LOOP -lt 51]
+while [ $LOOP -lt 51 ]
 do
 
 echo "Running "
@@ -49,5 +49,7 @@ fi
 RESULT=$(./measure-fork.sh)
 DATE=$(date +%s)
 echo $DATE,$RESULT >> $FILE
+
+$LOOP=$[$LOOP+1]
 
 done
