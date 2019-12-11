@@ -1,4 +1,6 @@
 import os
+import random
+import string
 import subprocess
 
 import click
@@ -51,14 +53,43 @@ def map(container_path, host_path, target_path):
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
 def run(container_path, namespace, limit, executable, args):
     click.echo(
-        f'container_path: {container_path}, namespace: {namespace}, limit: {limit}, executable: {executable}, args: {args}')
+        f'container_path: {container_path}, namespace: {namespace}, limit: {limit}, executable: {executable}, args: {" ".join(args)}')
 
-    # @TODO: Create cgroup
-    # echo $$ > tasks
-    # sudo unshare -p -f --mount-proc=$PWD/test/proc chroot ./test /bin/bash
-    # sudo nsenter --pid=/proc/{PID}/ns/{kind} \
-    #     unshare -f --mount-proc=$PWD/rootfs/proc \
-    #     chroot rootfs /bin/bash
+    subcommands = ['sudo']
+
+    if limit is not None:
+        controller, key = limit.split('=')[0].split('.', 1)
+        value = limit.split('=')[1]
+        print(f'controller: {controller}, key: {key}, value: {value}')
+
+        group_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+        create_command = f'cgcreate -g {controller}:{group_name}'
+        set_command = f'cgset -r {controller}.{key}={value} {group_name}'
+
+        _ = subprocess.call(create_command, shell=True)
+        _ = subprocess.call(set_command, shell=True)
+
+        exec_command = f'cgexec -g {controller}:{group_name}'
+        subcommands.append(exec_command)
+
+    if namespace is not None:
+        kind = namespace.split('=')[0]
+        pid = namespace.split('=')[1]
+
+        enter_command = f'nsenter --pid=/proc/{pid}/ns/{kind}'
+        subcommands.append(enter_command)
+
+        print(f'kind: {kind}, pid: {pid}')
+
+    unshare_command = f'unshare -p -f --mount-proc={container_path}/proc'
+    chroot_command = f'chroot {container_path} {executable} {" ".join(args)}'
+    subcommands.append(unshare_command)
+    subcommands.append(chroot_command)
+
+    # print(' '.join(subcommands))
+
+    _ = subprocess.call(' '.join(subcommands), shell=True)
 
 
 if __name__ == '__main__':
