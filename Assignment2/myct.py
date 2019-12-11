@@ -30,7 +30,6 @@ def init(container_path):
 @click.argument('host_path', type=click.Path(exists=True))
 @click.argument('target_path', type=click.Path(exists=False))
 def map(container_path, host_path, target_path):
-    click.echo(f'container_path: {container_path}, host_path: {host_path}, target_path: {target_path}')
     complete_path = os.path.normpath(container_path + target_path)
 
     mkdir_command = f'sudo mkdir -p {complete_path}'
@@ -52,16 +51,11 @@ def map(container_path, host_path, target_path):
 @click.argument('executable', type=click.Path(exists=True))
 @click.argument('args', nargs=-1, type=click.UNPROCESSED)
 def run(container_path, namespace, limit, executable, args):
-    click.echo(
-        f'container_path: {container_path}, namespace: {namespace}, limit: {limit}, executable: {executable}, args: {" ".join(args)}')
-
     subcommands = ['sudo']
 
     if limit is not None:
         controller, key = limit.split('=')[0].split('.', 1)
         value = limit.split('=')[1]
-        print(f'controller: {controller}, key: {key}, value: {value}')
-
         group_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
         create_command = f'cgcreate -g {controller}:{group_name}'
@@ -80,14 +74,10 @@ def run(container_path, namespace, limit, executable, args):
         enter_command = f'nsenter --pid=/proc/{pid}/ns/{kind}'
         subcommands.append(enter_command)
 
-        print(f'kind: {kind}, pid: {pid}')
-
     unshare_command = f'unshare -p -f --mount-proc={container_path}/proc'
     chroot_command = f'chroot {container_path} {executable} {" ".join(args)}'
     subcommands.append(unshare_command)
     subcommands.append(chroot_command)
-
-    # print(' '.join(subcommands))
 
     _ = subprocess.call(' '.join(subcommands), shell=True)
 
