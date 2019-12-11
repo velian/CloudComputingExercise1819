@@ -1,6 +1,8 @@
 #!/bin/bash
 #cd /home/ec2-user/AmazonBenchmarkingPack/
 
+free && sync && echo 3 > /proc/sys/vm/drop_caches && free
+
 FILE="cpu.csv"
 if [ ! -e $FILE ] ; then
 	touch $FILE
