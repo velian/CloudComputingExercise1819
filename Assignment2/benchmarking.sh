@@ -1,6 +1,7 @@
 #!/bin/bash
 #cd /home/ec2-user/AmazonBenchmarkingPack/
-$LOOP="0"
+
+LOOP="0"
 
 while [ $LOOP -lt 51 ]
 do
