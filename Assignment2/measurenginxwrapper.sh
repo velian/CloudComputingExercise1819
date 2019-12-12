@@ -13,8 +13,10 @@ if [ ! -e $FILE ] ; then
 	$( echo "time,value" >> $FILE)
 fi
 
-RESULT=$(./measure-nginx.sh & ./measure-nginx.sh)
+RESULT=$(./measure-nginx.sh localhost & ./measure-nginx.sh localhost)
 DATE=$(date +%s)
 echo $DATE,$RESULT >> $FILE
+
+LOOP=$(($LOOP + 1))
 
 done
