@@ -24,4 +24,5 @@ Regarding the second question: Forking a rumpkernel process would also duplicate
 corrupt communication. Rumprun does implement its own fork function rumpclient_fork(), which takes care of that and 
 allows us to use fork on the rumpkernel platform.
 
-Nginx Benchmarks: Initial behavious was as expected. The fairly lightweight Docker was close to native while, KVM and QEMU were slower at arround half speed. This is as expected. For some reason Docker and Native had a large drop in performance. I speculate that this might be related to a restart of the machine inbetween these measurements.
+Nginx Benchmarks: Initial behavious was as expected. The fairly lightweight Docker was close to native while, KVM and QEMU were slower at arround half speed. This is as expected. For some reason Docker and Native had a large drop in performance. I speculate that this might be related to a restart of the machine inbetween these measurements. 
+The Disk Benchmarks support this, except for the unexpected performance crash
