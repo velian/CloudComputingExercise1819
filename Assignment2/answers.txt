@@ -1,0 +1,26 @@
+CPU benchmarks:
+The results are very much in line with our expectations: Native execution results in the highest performance, with
+Docker only a bit behind. This is due to Docker having very little overhead. KVM is only slightly slower than Docker, which 
+is not surprising given that Linpack can be run mostly in user mode. QEMU without KVM is an order of magnitude slower than the 
+other solutions due to it actually emulating the hardware.
+
+Memory benchmarks:
+The memory results are mostly similar to those of the CPU benchmarks, again for the same reasons. The one surprise here is 
+Docker being slower than KVM, which is something we don't really see a reason for as Docker should in theory be at least 
+just as fast as KVM. The measurements are also don't show a very high variance, so measuring errors are not an explanation either.
+Maybe Docker somehow limits the memory access of individual containers by default?
+
+Disk benchmarks:
+As expected, native execution has the best results closely followed by Docker which does not have to deal with any abstractions.
+KVM however struggles a lot more here, which might be because third generation hardware virtualization does not work here, because 
+it relies on guests exclusively owning a device. This means that I/O will have to go through the hypervisor first.
+
+Fork benchmark:
+Again we have native in first and QEMU without KVM in last place, which is completely expected. KVM outperforming Docker however is not, 
+especially by such a wide margin. Here we can only speculate that this might be due to Docker sharing its kernel with the host, which 
+then leads to some sort of bottleneck there?
+
+Regarding the second question: Forking a rumpkernel process would also duplicate its communication with the host, which would 
+corrupt communication. Rumprun does implement its own fork function rumpclient_fork(), which takes care of that and 
+allows us to use fork on the rumpkernel platform.
+
