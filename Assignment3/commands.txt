@@ -1,0 +1,1 @@
+gcloud compute instances add-metadata instance-3 --metadata-from-file ssh-keys=Assignmnt3/list.txt
