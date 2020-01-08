@@ -1,1 +1,30 @@
-gcloud compute instances add-metadata instance-3 --metadata-from-file ssh-keys=Assignmnt3/list.txt
+# Download Kubespray
+git clone https://github.com/kubernetes-sigs/kubespray.git
+cd kubespray/
+
+# Install the required packages
+pip3 install -r requirements.txt
+
+# Copy the sample inventory
+mkdir inventory/mycluster 
+cp -rfp inventory/sample/* inventory/mycluster
+
+# Now replace the inventory.ini in the mycluster folder with our hosts.ini
+
+# Generate a SSH key to access the Google Cloud instances
+ssh-keygen -f ~/.ssh/my_gcp_key -t rsa
+chmod 400 ~/.ssh/my_gcp_key
+
+# Create a file that contains the public key in the format gcloud requires
+touch list.txt
+echo Jona: > list.txt
+cat ~/.ssh/my_gcp_key.pub > list.txt
+
+# Add your key to the instances metadata
+gcloud compute instances add-metadata instance-1 --metadata-from-file ssh-keys=list.txt
+gcloud compute instances add-metadata instance-2 --metadata-from-file ssh-keys=list.txt
+gcloud compute instances add-metadata instance-3 --metadata-from-file ssh-keys=list.txt
+
+# Run the cluster.yml playbook from the kubespray directory
+# Make sure the directory is not world writable as that will result in failures
+ansible-playbook --user Jona --become --private-key ~/.ssh/my_gcp_key -i inventory/mycluster/hosts.ini cluster.yml
