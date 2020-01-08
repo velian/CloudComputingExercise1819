@@ -1,3 +1,5 @@
+# 1. Set up the Kubernetes Cluster
+
 # Download Kubespray
 git clone https://github.com/kubernetes-sigs/kubespray.git
 cd kubespray/
@@ -28,3 +30,22 @@ gcloud compute instances add-metadata instance-3 --metadata-from-file ssh-keys=l
 # Run the cluster.yml playbook from the kubespray directory
 # Make sure the directory is not world writable as that will result in failures
 ansible-playbook --user Jona --become --private-key ~/.ssh/my_gcp_key -i inventory/mycluster/hosts.ini cluster.yml
+
+# 2. Set up the Kubernetes Cluster
+
+# Install docker if you haven't already
+# Go to the folder where the dockerfiles and the nginx config files are located
+# Build the images
+docker build -f frontend.dockerfile -t frontend .
+docker build -f backend.dockerfile -t backend .
+
+# Login to dockerhub
+docker login
+
+# Tag the images
+docker tag frontend jlo2020/methods-of-cloud-computing-ws-2019:frontend
+docker tag backend jlo2020/methods-of-cloud-computing-ws-2019:backend
+
+# Push them to dockerhub
+docker push jlo2020/methods-of-cloud-computing-ws-2019:frontend
+docker push jlo2020/methods-of-cloud-computing-ws-2019:backend
