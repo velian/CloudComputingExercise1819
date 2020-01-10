@@ -1,11 +1,15 @@
+# Kubespray versioning as in assignment is incompatible with ubuntu 18.04.3. Kubespray 2.9.0 appears to be compatible, when using ansible 2.7.6.
+
 # 1. Set up the Kubernetes Cluster
 
 # Download Kubespray
 git clone https://github.com/kubernetes-sigs/kubespray.git
+git checkout tags/v2.9.0
 cd kubespray/
 
 # Install the required packages
 pip3 install -r requirements.txt
+pip install ansible==2.7.6
 
 # Copy the sample inventory
 mkdir inventory/mycluster 
@@ -49,3 +53,8 @@ docker tag backend jlo2020/methods-of-cloud-computing-ws-2019:backend
 # Push them to dockerhub
 docker push jlo2020/methods-of-cloud-computing-ws-2019:frontend
 docker push jlo2020/methods-of-cloud-computing-ws-2019:backend
+
+# Connect to master node
+gcloud compute instances add-metadata instance-1 --metadata-from-file ssh-keys=list.txt
+pip install ansible==2.7.6
+ansible-playbook cc-webapp.yml
