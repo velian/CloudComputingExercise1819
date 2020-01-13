@@ -44,14 +44,24 @@
                 image: jlo2020/methods-of-cloud-computing-ws-2019:backend
                 ports:
                 - containerPort: 80
-                livenessProbe:
-                  httpGet:
-                    path: /ready
-                    port: 80
-                    httpHeaders:
-                      - name: CC-Ready
-                        value: backend
-                  initialDelaySeconds: 15  
-                  timeoutSeconds: 1
-                  name: liveness-backend
+                # livenessProbe:
+                #   httpGet:
+                #     path: /ready
+                #     port: 80
+                #     httpHeaders:
+                #       - name: CC-Ready
+                #         value: backend
+                #   initialDelaySeconds: 15  
+                #   timeoutSeconds: 1
+                #   name: liveness-backend
+                # readinessProbe:
+                #   httpGet:
+                #     path: /ready
+                #     port: 80
+                #     httpHeaders:
+                #       - name: CC-Ready
+                #         value: backend
+                #   initialDelaySeconds: 15  
+                #   timeoutSeconds: 1
+                #   name: readiness-backend
 
