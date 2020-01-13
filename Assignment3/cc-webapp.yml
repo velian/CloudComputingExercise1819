@@ -42,6 +42,7 @@
               containers:
               - name: nginx
                 image: jlo2020/methods-of-cloud-computing-ws-2019:backend
+                imagePullPolicy: Always
                 ports:
                 - containerPort: 80
                 # livenessProbe:
@@ -64,4 +65,22 @@
                 #   initialDelaySeconds: 15  
                 #   timeoutSeconds: 1
                 #   name: readiness-backend
+                
+  - name: Create the backend Service object from an inline definition
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          namespace: testing
+          name: backend-service
+        spec:
+          selector:
+            app: nginx
+          ports:
+            - protocol: TCP
+              port: 80
+              targetPort: http
+
 
