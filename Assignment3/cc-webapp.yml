@@ -75,6 +75,8 @@
         metadata:
           namespace: testing
           name: backend-service
+          labels:
+            app: nginx
         spec:
           selector:
             app: nginx
