@@ -2,6 +2,10 @@
   remote_user: root
 
   tasks:
+  - name: Install pip3
+    apt:
+      name: python3-pip
+      
   - name: Install openshift
     pip:
       name: openshift
