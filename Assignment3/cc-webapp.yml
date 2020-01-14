@@ -87,4 +87,53 @@
               port: 80
               targetPort: http
 
+  - name: Create the frontend Deployment object from an inline definition
+    k8s:
+      state: present
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          namespace: testing
+          name: frontend-deployment
+          labels:
+            app: nginx-frontend
+        spec:
+          replicas: 3
+          selector:
+            matchLabels:
+              app: nginx-frontend
+          template:
+            metadata:
+              namespace: testing
+              labels:
+                app: nginx-frontend
+            spec:
+              containers:
+              - name: nginx-frontend
+                image: jlo2020/methods-of-cloud-computing-ws-2019:frontend
+                imagePullPolicy: Always
+                ports:
+                - name: http
+                  containerPort: 80
+                livenessProbe:
+                  httpGet:
+                    path: /ready
+                    port: 80
+                    httpHeaders:
+                      - name: CC-Ready
+                        value: frontend
+                  initialDelaySeconds: 15  
+                  timeoutSeconds: 1
+                  name: liveness-frontend
+                readinessProbe:
+                  httpGet:
+                    path: /ready
+                    port: 80
+                    httpHeaders:
+                      - name: CC-Ready
+                        value: frontend
+                  initialDelaySeconds: 15  
+                  timeoutSeconds: 1
+                  name: readiness-frontend
 
