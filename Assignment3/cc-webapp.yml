@@ -45,26 +45,26 @@
                 imagePullPolicy: Always
                 ports:
                 - containerPort: 80
-                # livenessProbe:
-                #   httpGet:
-                #     path: /ready
-                #     port: 80
-                #     httpHeaders:
-                #       - name: CC-Ready
-                #         value: backend
-                #   initialDelaySeconds: 15  
-                #   timeoutSeconds: 1
-                #   name: liveness-backend
-                # readinessProbe:
-                #   httpGet:
-                #     path: /ready
-                #     port: 80
-                #     httpHeaders:
-                #       - name: CC-Ready
-                #         value: backend
-                #   initialDelaySeconds: 15  
-                #   timeoutSeconds: 1
-                #   name: readiness-backend
+                livenessProbe:
+                  httpGet:
+                    path: /ready
+                    port: 80
+                    httpHeaders:
+                      - name: CC-Ready
+                        value: backend
+                  initialDelaySeconds: 15  
+                  timeoutSeconds: 1
+                  name: liveness-backend
+                readinessProbe:
+                  httpGet:
+                    path: /ready
+                    port: 80
+                    httpHeaders:
+                      - name: CC-Ready
+                        value: backend
+                  initialDelaySeconds: 15  
+                  timeoutSeconds: 1
+                  name: readiness-backend
                 
   - name: Create the backend Service object from an inline definition
     k8s:

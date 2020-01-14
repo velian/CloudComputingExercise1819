@@ -54,7 +54,15 @@ docker tag backend jlo2020/methods-of-cloud-computing-ws-2019:backend
 docker push jlo2020/methods-of-cloud-computing-ws-2019:frontend
 docker push jlo2020/methods-of-cloud-computing-ws-2019:backend
 
+# Configure the firewall to make sure the communication between the pods works
+# For simplicity, we simply allow all traffic (not recommended)
+gcloud compute firewall-rules create allow-everything --allow all
+
 # Connect to master node
-gcloud compute instances add-metadata instance-1 --metadata-from-file ssh-keys=list.txt
+# Install ansible
 pip install ansible==2.7.6
-ansible-playbook cc-webapp.yml
+
+# Make sure that you can ssh into the other instances, either by copying the key created earlier to this instance
+# or by creating a new key and adding that to the instances metadata
+# After that, run the webapp with
+ansible-playbook -i hosts.ini -e "ansible_ssh_user=Jona" --become --private-key ~/.ssh/my_gcp_key cc-webapp.yml
