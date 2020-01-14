@@ -44,7 +44,8 @@
                 image: jlo2020/methods-of-cloud-computing-ws-2019:backend
                 imagePullPolicy: Always
                 ports:
-                - containerPort: 80
+                - name: http
+                  containerPort: 80
                 livenessProbe:
                   httpGet:
                     path: /ready
