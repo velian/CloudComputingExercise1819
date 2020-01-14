@@ -137,3 +137,23 @@
                   timeoutSeconds: 1
                   name: readiness-frontend
 
+  - name: Create the frontend Service object from an inline definition
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          namespace: testing
+          name: cc-frontend-service
+          labels:
+            app: nginx-frontend
+        spec:
+          selector:
+            app: nginx-frontend
+          type: NodePort
+          ports:
+            - protocol: TCP
+              port: 80
+              targetPort: http
+
