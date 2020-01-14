@@ -1,0 +1,45 @@
+Sending 100 requests to 35.242.241.94:30894...
+Sending 100 requests to 35.242.221.129:30894...
+Sending 100 requests to 34.89.191.119:30894...
+
+Encountered 4 frontends:
+frontend-deployment-7bb7fbb5f9-twb6v
+frontend-deployment-7bb7fbb5f9-gwp2x
+frontend-deployment-7bb7fbb5f9-9b769
+frontend-deployment-7bb7fbb5f9-v2pvj
+
+Encountered 6 backends:
+backend-deployment-658f65dbf-8bv9w
+backend-deployment-658f65dbf-7wb6q
+backend-deployment-658f65dbf-jljv8
+backend-deployment-658f65dbf-52jwj
+backend-deployment-658f65dbf-mc7dl
+backend-deployment-658f65dbf-2h4nw
+
+Encountered 24 reply texts:
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.92.27 (backend-deployment-658f65dbf-7wb6q)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.96.28 (backend-deployment-658f65dbf-jljv8)
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.90.26 (backend-deployment-658f65dbf-mc7dl)
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.96.29 (backend-deployment-658f65dbf-8bv9w)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.96.26 (backend-deployment-658f65dbf-2h4nw)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.96.28 (backend-deployment-658f65dbf-jljv8)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.96.29 (backend-deployment-658f65dbf-8bv9w)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.90.26 (backend-deployment-658f65dbf-mc7dl)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.96.29 (backend-deployment-658f65dbf-8bv9w)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.96.26 (backend-deployment-658f65dbf-2h4nw)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.90.26 (backend-deployment-658f65dbf-mc7dl)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.92.27 (backend-deployment-658f65dbf-7wb6q)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.92.27 (backend-deployment-658f65dbf-7wb6q)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.96.29 (backend-deployment-658f65dbf-8bv9w)
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.96.26 (backend-deployment-658f65dbf-2h4nw)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.90.24 (backend-deployment-658f65dbf-52jwj)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.92.27 (backend-deployment-658f65dbf-7wb6q)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.96.28 (backend-deployment-658f65dbf-jljv8)
+Hello! You are 10.233.90.25 and requested /etc/nginx/html/ from 10.233.90.26 (backend-deployment-658f65dbf-mc7dl)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.90.24 (backend-deployment-658f65dbf-52jwj)
+Hello! You are 10.233.90.28 and requested /etc/nginx/html/ from 10.233.90.24 (backend-deployment-658f65dbf-52jwj)
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.90.24 (backend-deployment-658f65dbf-52jwj)
+Hello! You are 10.233.92.28 and requested /etc/nginx/html/ from 10.233.96.26 (backend-deployment-658f65dbf-2h4nw)
+Hello! You are 10.233.96.27 and requested /etc/nginx/html/ from 10.233.96.28 (backend-deployment-658f65dbf-jljv8)
+
+All tests passed.

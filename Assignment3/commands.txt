@@ -35,7 +35,7 @@ gcloud compute instances add-metadata instance-3 --metadata-from-file ssh-keys=l
 # Make sure the directory is not world writable as that will result in failures
 ansible-playbook --user Jona --become --private-key ~/.ssh/my_gcp_key -i inventory/mycluster/hosts.ini cluster.yml
 
-# 2. Set up the Kubernetes Cluster
+# 2. Prepare Application Containers
 
 # Install docker if you haven't already
 # Go to the folder where the dockerfiles and the nginx config files are located
@@ -54,6 +54,8 @@ docker tag backend jlo2020/methods-of-cloud-computing-ws-2019:backend
 docker push jlo2020/methods-of-cloud-computing-ws-2019:frontend
 docker push jlo2020/methods-of-cloud-computing-ws-2019:backend
 
+# 3. Deploy the application
+
 # Configure the firewall to make sure the communication between the pods works
 # For simplicity, we simply allow all traffic (not recommended)
 gcloud compute firewall-rules create allow-everything --allow all
@@ -64,5 +66,24 @@ pip install ansible==2.7.6
 
 # Make sure that you can ssh into the other instances, either by copying the key created earlier to this instance
 # or by creating a new key and adding that to the instances metadata
+# Transfer the cc-webapp.yml and the hosts.ini to the server
 # After that, run the webapp with
 ansible-playbook -i hosts.ini -e "ansible_ssh_user=Jona" --become --private-key ~/.ssh/my_gcp_key cc-webapp.yml
+
+# 4. Scale up and Test the deployment
+
+# After deploying the webapp, it has three frontend and three backend replicas
+# To meet the requirements of the test script, we need to scale up
+
+# Become root and scale the deployments up
+sudo su
+kubectl scale deployment -n testing backend-deployment --replicas=6
+kubectl scale deployment -n testing frontend-deployment --replicas=4
+
+# To find out under which port we can access the frontend service run
+kubectl describe services --namespace=testing cc-frontend-service
+# The relevant port is the NodePort
+
+# Now we can run the test script (on any machine)
+# You might have to install the requests package with pip3 install requests
+python3 test-deployment.py [IP0]:NodePort [IP1]:NodePort [IP2]:NodePort
