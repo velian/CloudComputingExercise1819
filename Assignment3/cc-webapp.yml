@@ -75,12 +75,13 @@
         kind: Service
         metadata:
           namespace: testing
-          name: backend-service
+          name: cc-backend-service
           labels:
             app: nginx
         spec:
           selector:
             app: nginx
+          type: ClusterIP
           ports:
             - protocol: TCP
               port: 80
