@@ -66,6 +66,8 @@ object SocketWindowWordCount {
     // parse the data, group it, window it, and aggregate the counts
     val windowCounts = text
       .flatMap { w => w.split("\\s") }
+      .map { w => w.replaceAll("[^A-Za-z]", "");}
+      .map { w => w.toLowerCase()}
       .map { w => WordWithCount(w, 1) }
       .keyBy("word")
       .timeWindow(Time.seconds(5))
