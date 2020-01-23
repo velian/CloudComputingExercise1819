@@ -23,7 +23,7 @@ import org.apache.flink.core.fs.FileSystem
 import org.apache.flink.streaming.api.scala._
 
 
-object SocketWindowWordCount {
+object WordCount {
 
   def main(args: Array[String]) : Unit = {
 

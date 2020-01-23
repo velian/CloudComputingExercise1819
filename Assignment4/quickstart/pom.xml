@@ -139,7 +139,7 @@ under the License.
 							</filters>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.myorg.quickstart.SocketWindowWordCount</mainClass>
+									<mainClass>org.myorg.quickstart.CellCluster</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
