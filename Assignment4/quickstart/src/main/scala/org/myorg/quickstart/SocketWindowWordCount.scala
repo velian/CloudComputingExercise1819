@@ -18,55 +18,23 @@
 
 package org.myorg.quickstart
 
-import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.java.utils.ParameterTool
-import org.apache.flink.core.fs.{FileSystem, Path}
-import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.core.fs.FileSystem
 import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.api.windowing.time.Time
 
-/**
- * Implements a streaming windowed version of the "WordCount" program.
- *
- * This program connects to a server socket and reads strings from the socket.
- * The easiest way to try this out is to open a text sever (at port 12345)
- * using the ''netcat'' tool via
- * {{{
- * nc -l 12345 on Linux or nc -l -p 12345 on Windows
- * }}}
- * and run this example with the hostname and the port as arguments..
- */
+
 object SocketWindowWordCount {
 
-  /** Main program method */
   def main(args: Array[String]) : Unit = {
 
-    // the host and the port to connect to
-    var hostname: String = "localhost"
-    var port: Int = 0
-
-    try {
-      val params = ParameterTool.fromArgs(args)
-      hostname = if (params.has("hostname")) params.get("hostname") else "localhost"
-      port = params.getInt("port")
-    } catch {
-      case e: Exception => {
-        System.err.println("No port specified. Please run 'SocketWindowWordCount " +
-          "--hostname <hostname> --port <port>', where hostname (localhost by default) and port " +
-          "is the address of the text server")
-        System.err.println("To start a simple text server, run 'netcat -l <port>' " +
-          "and type the input text into the command line")
-        return
-      }
-    }
+    val params = ParameterTool.fromArgs(args)
+    val input = if (params.has("input")) params.get("input") else "tolstoy-war-and-peace.txt"
+    val output = if (params.has("output")) params.get("output") else "output.txt"
 
     // get the execution environment
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
-    // get input data by connecting to the socket
-    // val text: DataStream[String] = env.socketTextStream(hostname, port, '\n')
-
-    val text: DataStream[String] = env.readTextFile("/Users/Julius/Documents/Uni/Master/CloudComputing/tolstoy-war-and-peace.txt")
+    val text: DataStream[String] = env.readTextFile(input)
 
     // parse the data, group it, window it, and aggregate the counts
     val windowCounts = text
@@ -78,7 +46,7 @@ object SocketWindowWordCount {
       .keyBy("word")
       .sum("count")
 
-    windowCounts.writeAsCsv("output.csv", FileSystem.WriteMode.OVERWRITE, "\n", ",")
+    windowCounts.writeAsCsv(output, FileSystem.WriteMode.OVERWRITE, "\n", ",")
 
     env.execute("Socket Window WordCount")
   }
