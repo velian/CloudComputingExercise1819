@@ -18,7 +18,10 @@
 
 package org.myorg.quickstart
 
+import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.java.utils.ParameterTool
+import org.apache.flink.core.fs.{FileSystem, Path}
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.windowing.time.Time
 
@@ -70,11 +73,18 @@ object SocketWindowWordCount {
       .map { w => w.toLowerCase()}
       .map { w => WordWithCount(w, 1) }
       .keyBy("word")
-      .timeWindow(Time.seconds(5))
+      //.timeWindow(Time.seconds(5))
       .sum("count")
 
     // print the results with a single thread, rather than in parallel
     windowCounts.print().setParallelism(1)
+
+    windowCounts.writeAsCsv("output.csv", FileSystem.WriteMode.OVERWRITE, "\n", ",")
+
+    /* val sink: StreamingFileSink[WordWithCount] = StreamingFileSink
+      .forRowFormat(new Path("output.csv"), new SimpleStringEncoder[WordWithCount]("UTF-8"))
+      .build()
+    windowCounts.addSink(sink) */
 
     env.execute("Socket Window WordCount")
   }
