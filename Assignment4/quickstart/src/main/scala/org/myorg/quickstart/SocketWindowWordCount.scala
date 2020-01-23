@@ -71,10 +71,11 @@ object SocketWindowWordCount {
       .flatMap { w => w.split("\\s") }
       .map { w => w.replaceAll("[^A-Za-z]", "");}
       .map { w => w.toLowerCase()}
+      .filter( w => w != "")
       .map { w => WordWithCount(w, 1) }
       .keyBy("word")
       .sum("count")
-    
+
     windowCounts.writeAsCsv("output.csv", FileSystem.WriteMode.OVERWRITE, "\n", ",")
 
     env.execute("Socket Window WordCount")
