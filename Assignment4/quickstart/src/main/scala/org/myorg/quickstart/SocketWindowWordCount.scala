@@ -73,18 +73,9 @@ object SocketWindowWordCount {
       .map { w => w.toLowerCase()}
       .map { w => WordWithCount(w, 1) }
       .keyBy("word")
-      //.timeWindow(Time.seconds(5))
       .sum("count")
-
-    // print the results with a single thread, rather than in parallel
-    windowCounts.print().setParallelism(1)
-
+    
     windowCounts.writeAsCsv("output.csv", FileSystem.WriteMode.OVERWRITE, "\n", ",")
-
-    /* val sink: StreamingFileSink[WordWithCount] = StreamingFileSink
-      .forRowFormat(new Path("output.csv"), new SimpleStringEncoder[WordWithCount]("UTF-8"))
-      .build()
-    windowCounts.addSink(sink) */
 
     env.execute("Socket Window WordCount")
   }
