@@ -30,17 +30,26 @@ object CellCluster {
 
     // checking input parameters
     val params: ParameterTool = ParameterTool.fromArgs(args)
+    val mncs = List()
+    val k = Int.MaxValue
 
     // set up execution environment
     val env: ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
 
     // get input data:
     // read the points and centroids from the provided paths or fall back to default data
-    val points: DataSet[Point] = getInputDataSet(params, env)
+    val cellTowers: DataSet[CellTower] = getInputDataSet(params, env)
 
+    val centroids: DataSet[Centroid] = cellTowers
+      .filter( cell => cell.radio == "LTE")
+      .filter( cell => mncs.isEmpty || mncs.contains(cell.mnc))
+      .map(cell => Centroid(cell.CID, cell.longitude, cell.latitude))
+      .first(k)
 
-    // TODO: Get centroids from points
-    // val centroids: DataSet[Centroid] = getCentroidDataSet(params, env)
+    val points: DataSet[Point] = cellTowers
+      .filter( cell => cell.radio != "LTE")
+      .filter( cell => mncs.isEmpty || mncs.contains(cell.mnc))
+      .map( cell => Point(cell.longitude, cell.latitude))
 
     val finalCentroids = centroids.iterate(params.getInt("iterations", 10)) { currentCentroids =>
       val newCentroids = points
@@ -69,8 +78,8 @@ object CellCluster {
   //     UTIL FUNCTIONS
   // *************************************************************************
 
-  def getInputDataSet(params: ParameterTool, env: ExecutionEnvironment): DataSet[Point] = {
-    env.readCsvFile[Point](
+  def getInputDataSet(params: ParameterTool, env: ExecutionEnvironment): DataSet[CellTower] = {
+    env.readCsvFile[CellTower](
       params.get("input"),
       fieldDelimiter = " ",
       includedFields = Array(0, 2, 4, 5, 6))
@@ -113,6 +122,11 @@ object CellCluster {
       s"$x $y"
 
   }
+
+  /**
+   * A simple two-dimensional point.
+   */
+  case class CellTower(var radio: String = "", var mnc: Int = 0, var CID: Int = 0, var longitude: Int = 0, var latitude: Int  = 0)
 
   /**
    * A simple two-dimensional point.
