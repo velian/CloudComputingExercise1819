@@ -64,7 +64,9 @@ object SocketWindowWordCount {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     // get input data by connecting to the socket
-    val text: DataStream[String] = env.socketTextStream(hostname, port, '\n')
+    // val text: DataStream[String] = env.socketTextStream(hostname, port, '\n')
+
+    val text: DataStream[String] = env.readTextFile("/Users/Julius/Documents/Uni/Master/CloudComputing/tolstoy-war-and-peace.txt")
 
     // parse the data, group it, window it, and aggregate the counts
     val windowCounts = text
