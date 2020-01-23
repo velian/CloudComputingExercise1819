@@ -81,8 +81,9 @@ object CellCluster {
   def getInputDataSet(params: ParameterTool, env: ExecutionEnvironment): DataSet[CellTower] = {
     env.readCsvFile[CellTower](
       params.get("input"),
-      fieldDelimiter = " ",
-      includedFields = Array(0, 2, 4, 5, 6))
+      fieldDelimiter = ",",
+      includedFields = Array(0, 2, 4, 6, 7),
+      ignoreFirstLine = true)
   }
 
   // *************************************************************************
@@ -126,7 +127,7 @@ object CellCluster {
   /**
    * A simple two-dimensional point.
    */
-  case class CellTower(var radio: String = "", var mnc: Int = 0, var CID: Int = 0, var longitude: Int = 0, var latitude: Int  = 0)
+  case class CellTower(var radio: String = "", var mnc: Int = 0, var CID: Int = 0, var longitude: Double = 0, var latitude: Double  = 0)
 
   /**
    * A simple two-dimensional point.
