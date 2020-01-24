@@ -21,6 +21,7 @@ import org.apache.flink.api.java.functions.FunctionAnnotation.ForwardedFields
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
+import org.apache.flink.core.fs.FileSystem
 
 import scala.collection.JavaConverters._
 
@@ -30,8 +31,12 @@ object CellCluster {
 
     // checking input parameters
     val params: ParameterTool = ParameterTool.fromArgs(args)
-    val mncs = List()
-    val k = Int.MaxValue
+    val mnc_string = if (params.has("mnc")) params.get("mnc") else ""
+    val k = if (params.has("k")) params.getInt("k") else Int.MaxValue
+
+    val mncs = if (mnc_string == "") Array() else mnc_string
+      .split(",")
+      .map(mnc => mnc.toInt)
 
     // set up execution environment
     val env: ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
@@ -65,7 +70,7 @@ object CellCluster {
       points.map(new SelectNearestCenter).withBroadcastSet(finalCentroids, "centroids")
 
     if (params.has("output")) {
-      clusteredPoints.writeAsCsv(params.get("output"), "\n", " ")
+      clusteredPoints.writeAsCsv(params.get("output"), "\n", ",", FileSystem.WriteMode.OVERWRITE)
       env.execute("Scala KMeans Example")
     } else {
       println("Printing result to stdout. Use --output to specify output path.")
@@ -120,7 +125,7 @@ object CellCluster {
     }
 
     override def toString: String =
-      s"$x $y"
+      s"$x,$y"
 
   }
 
