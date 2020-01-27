@@ -16,14 +16,9 @@
  * limitations under the License.
  */
 package org.myorg.quickstart
-import org.apache.flink.api.common.functions._
-import org.apache.flink.api.java.functions.FunctionAnnotation.ForwardedFields
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.api.scala._
-import org.apache.flink.configuration.Configuration
 import org.apache.flink.core.fs.FileSystem
-
-import scala.collection.JavaConverters._
 
 object DeadSpots {
 
@@ -47,10 +42,40 @@ object DeadSpots {
     val filteredCellTowers: DataSet[CellTower] = cellTowers
       .filter( cell => mncs.isEmpty || mncs.contains(cell.mnc))
 
-    val t = cellTowers
-      .map(new IsInRange).withBroadcastSet(spots, "spots")
+    val cellTowersGSM = filteredCellTowers.filter(cell => cell.radio == "GSM")
+    val cellTowersUMTS = filteredCellTowers.filter(cell => cell.radio == "UMTS")
+    val cellTowersLTE = filteredCellTowers.filter(cell => cell.radio == "LTE")
 
-    val results = spots
+    val coverageGSM = cellTowersGSM
+      .crossWithTiny(spots)
+      .map(element => (element._2.longitude, element._2.latitude, element._2.haversineDistance(element._1) - element._1.range))
+      .map(spot => (spot._1, spot._2, spot._3 <= 0))
+      .groupBy(spot => (spot._1, spot._2))
+      .reduce {(spot1, spot2) => (spot1._1, spot1._2, spot1._3 || spot2._3)}
+      .map(spot => (spot._1, spot._2, (spot._3, false, false)))
+
+    val coverageUMTS = cellTowersUMTS
+      .crossWithTiny(spots)
+      .map(element => (element._2.longitude, element._2.latitude, element._2.haversineDistance(element._1) - element._1.range))
+      .map(spot => (spot._1, spot._2, spot._3 <= 0))
+      .groupBy(spot => (spot._1, spot._2))
+      .reduce {(spot1, spot2) => (spot1._1, spot1._2, spot1._3 || spot2._3)}
+      .map(spot => (spot._1, spot._2, (false, spot._3, false)))
+
+    val coverageLTE = cellTowersLTE
+      .crossWithTiny(spots)
+      .map(element => (element._2.longitude, element._2.latitude, element._2.haversineDistance(element._1) - element._1.range))
+      .map(spot => (spot._1, spot._2, spot._3 <= 0))
+      .groupBy(spot => (spot._1, spot._2))
+      .reduce {(spot1, spot2) => (spot1._1, spot1._2, spot1._3 || spot2._3)}
+      .map(spot => (spot._1, spot._2, (false, false, spot._3)))
+
+    val results = coverageGSM
+      .union(coverageUMTS)
+      .union(coverageLTE)
+      .groupBy(spot => (spot._1, spot._2))
+      .reduce {(spot1, spot2) => (spot1._1, spot1._2, (spot1._3._1 || spot2._3._1, spot1._3._2 || spot2._3._2, spot1._3._3 || spot2._3._3))}
+      .map(spot => Result(spot._1, spot._2, spot._3._1, spot._3._2, spot._3._3))
 
     if (params.has("output")) {
       results.writeAsCsv(params.get("output"), "\n", ",", FileSystem.WriteMode.OVERWRITE)
@@ -132,37 +157,12 @@ object DeadSpots {
 
   }
 
-  /**
-   * A simple two-dimensional point.
-   */
   case class CellTower(var radio: String = "", var mnc: Int = 0, var longitude: Double = 0, var latitude: Double  = 0, var range: Double = 0) extends Coordinate
 
+  case class Result(var longitude: Double = 0, var latitude: Double  = 0, var gsm: Boolean, var umts: Boolean, var lte: Boolean) extends Coordinate
+
   /**
    * A simple two-dimensional point.
    */
-  case class Point(var latitude: Double = 0, var longitude: Double = 0) extends Coordinate
-
-
-  /** Determines the closest cluster center for a data point. */
-  @ForwardedFields(Array("*->_2"))
-  final class IsInRange extends RichMapFunction[CellTower, Boolean] {
-    private var spots: Traversable[Point] = null
-
-    /** Reads the centroid values from a broadcast variable into a collection. */
-    override def open(parameters: Configuration) {
-      spots = getRuntimeContext.getBroadcastVariable[Point]("spots").asScala
-    }
-
-    def map(p: CellTower): Boolean = {
-      for (centroid <- spots) {
-        val distance = p.haversineDistance(centroid)
-        val reaches = distance <= p.range
-        if (reaches) {
-          return true
-        }
-      }
-      false
-    }
-
-  }
+  case class Point(var longitude: Double = 0, var latitude: Double = 0) extends Coordinate
 }
