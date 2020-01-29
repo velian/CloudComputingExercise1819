@@ -1,10 +1,14 @@
 import random
 
-for x in range (200):
+with open("spots.csv", "w") as file:
 
-	lat = random.uniform(13.084130, 13.753934)
+	for x in range (2000):
+	
+		lat = random.uniform(13.084130, 13.753934)
+	
+		lon = random.uniform(52.370734, 52.681835)
+	
+		file.write(str(lat) + "," + str(lon) + "\n")
 
-	lon = random.uniform(52.370734, 52.681835)
 
-	print(str(lon) + " , " + str(lat))
 
