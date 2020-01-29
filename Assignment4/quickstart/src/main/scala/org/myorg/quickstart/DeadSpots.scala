@@ -75,7 +75,7 @@ object DeadSpots {
       .union(coverageLTE)
       .groupBy(spot => (spot._1, spot._2))
       .reduce {(spot1, spot2) => (spot1._1, spot1._2, (spot1._3._1 || spot2._3._1, spot1._3._2 || spot2._3._2, spot1._3._3 || spot2._3._3))}
-      .map(spot => Result(spot._1, spot._2, spot._3._1, spot._3._2, spot._3._3))
+      .map(spot => Result(spot._1, spot._2, if(spot._3._1) 1 else 0, if(spot._3._2) 1 else 0, if(spot._3._3) 1 else 0))
 
     if (params.has("output")) {
       results.writeAsCsv(params.get("output"), "\n", ",", FileSystem.WriteMode.OVERWRITE)
@@ -159,7 +159,7 @@ object DeadSpots {
 
   case class CellTower(var radio: String = "", var mnc: Int = 0, var longitude: Double = 0, var latitude: Double  = 0, var range: Double = 0) extends Coordinate
 
-  case class Result(var longitude: Double = 0, var latitude: Double  = 0, var gsm: Boolean, var umts: Boolean, var lte: Boolean) extends Coordinate
+  case class Result(var longitude: Double = 0, var latitude: Double  = 0, var gsm: Int, var umts: Int, var lte: Int) extends Coordinate
 
   /**
    * A simple two-dimensional point.
