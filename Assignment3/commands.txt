@@ -9,7 +9,7 @@ cd kubespray/
 
 # Install the required packages
 pip3 install -r requirements.txt
-pip install ansible==2.7.6
+pip3 install ansible==2.7.6
 
 # Copy the sample inventory
 mkdir inventory/mycluster 

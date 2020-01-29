@@ -1,0 +1,15 @@
+sudo su
+curl -L https://git.io/get_helm.sh | bash
+helm init
+
+# https://github.com/helm/helm/issues/3055#issuecomment-356347732
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+
+helm install \
+    --set yarn.nodeManager.resources.limits.memory=4096Mi \
+    --set yarn.nodeManager.replicas=1 \
+    stable/hadoop
+	
+
