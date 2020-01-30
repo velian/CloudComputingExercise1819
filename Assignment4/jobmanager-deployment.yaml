@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: flink:scala_2.11
+        image: methods-of-cloud-computing-ws-2019:flink-1.9-hadoop-2.8.3
         workingDir: /opt/flink
         command: ["/bin/bash", "-c", "$FLINK_HOME/bin/jobmanager.sh start;\
           while :;

@@ -10,6 +10,7 @@ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"templat
 helm install \
     --set yarn.nodeManager.resources.limits.memory=4096Mi \
     --set yarn.nodeManager.replicas=1 \
+	--set image.tag=2.8.3 \
     stable/hadoop
 	
 kubectl create -f flink-configuration-configmap.yaml
