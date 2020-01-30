@@ -1,0 +1,37 @@
+1: Wordcount
+	Synchronization and communication for Wordcount:
+		The keyby step requires communicaiton (for the shuffle component) evertything else happens locally
+		Also data has to be collected at the end
+
+	Ressource Bounds:
+		Disk. This example is simple enough that the DISKIO should really be the only limiting factor.
+
+	Partitioning:
+		If the data is skewed (for exampe some words occuring very often) clever partioning could increase performance but we do not expect this to yield great results.
+
+2: Cell Cluster
+	Synchronization
+		Synchronization is necessary once for every iteration.
+		The centroids have to be brodcast
+		Synchronization is necessary when grouping the centroids
+		Also data has to be collected at the end
+
+	Ressource Bounds
+		This is a computationally intensive problem. It is bound by CPU.
+
+	Partiotioning
+		Centroids are broadcast and thus not partioned.
+		We do not believe that data partiotioning can enhance this algorithm by a lot
+
+3: Deadspots
+	Synchronisation
+		Union of all data towers requires synchronization.
+		The group bys when creating the typecoverage datasaets require synchronzation.
+
+	Ressource Bounds:
+		Network and Cpu.
+		If there is a high spot count a large ammount network traffic may be a signicant bound.
+		Computing the cross product of many spots is also computationaly intensive. (n*m is large enough to be computationaly relevant)
+
+	Partitioning:
+		Proper partioning of the cell tower types could decrease load during shuffle phases.
