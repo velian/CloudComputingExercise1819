@@ -1,3 +1,35 @@
+(As Hadoop refused to work this is on a local system)
+
+Wordcount
+The longer the file the longer it took, but no file was large enough to affect execution time greatly.
+
+KMEans
+
+Kmeans scales surprisingly well on only one node. It would have certainly been interseting to see how this scales with more than 1 worker. I expect clusters to affect execution times significantly more than iterations (compared to single node execution)
+
+Cluster 1 Iterations 1 = 836
+Cluster 250 Iterations 1 = 1484
+Cluster 500 Iterations 1 = 1555
+Cluster 1000 Iterations 1 = 2256
+
+Cluster 1 Iterations 5 = 1687
+Cluster 250 Iterations 5 = 2776
+Cluster 500 Iterations 5 = 3835
+Cluster 1000 Iterations 1 = 5931
+
+Cluster 1 Iterations 10 = 2479
+Cluster 250 Iterations 10 = 4330
+Cluster 500 Iterations 10 = 6686
+Cluster 1000 Iterations 10 = 11463
+
+Deadzones
+
+Deadzones is not particularly efficient and does not scale well with many points. Being able to parrelize more of it would have been greatly beneficial.
+
+200 Spots = ~10 seconds
+2000 Spots = 8 minutes
+20000 Spots = Did not complete.
+
 1: Wordcount
 	Synchronization and communication for Wordcount:
 		The keyby step requires communicaiton (for the shuffle component) evertything else happens locally
