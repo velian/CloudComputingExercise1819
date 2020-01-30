@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: flink:latest
+        image: flink:scala_2.11
         workingDir: /opt/flink
         command: ["/bin/bash", "-c", "$FLINK_HOME/bin/jobmanager.sh start;\
           while :;
