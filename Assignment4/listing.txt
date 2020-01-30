@@ -1,24 +1,52 @@
+# Set up the Kubernetes cluster as described in the last assignment
+# Connect to one of the nodes and install helm by runnning
 sudo su
 curl -L https://git.io/get_helm.sh | bash
 helm init
 
+# The Hadoop installation fails if we don't do this
 # https://github.com/helm/helm/issues/3055#issuecomment-356347732
 kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
 
+# Install hadoop via Helm
+# Make sure you have enough RAM on the nodes, the smaller instances won't do the trick
 helm install \
     --set yarn.nodeManager.resources.limits.memory=4096Mi \
     --set yarn.nodeManager.replicas=1 \
 	--set image.tag=2.8.3 \
     stable/hadoop
 	
+# Find out the name of the NodeManger pod
+kubectl get pods | grep yarn-nm | awk '{print $1}'
+
+# Copy your data on the node, for example via git (for small files at least)
+# Copy your data into the pod
+kubectl cp Data <pod-name>://usr/local/hadoop-2.8.3/Data
+
+# Connect to the pod and put the data into HDFS
+kubectl exec -it <pod-name> bash
+hadoop fs -put Data/ /
+	
+# https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html#session-cluster-resource-definitions
+# Copy deployment definitions from this page and put them into yaml files
+# Back in the host system, create the Flink session cluster
 kubectl create -f flink-configuration-configmap.yaml
 kubectl create -f jobmanager-service.yaml
 kubectl create -f jobmanager-deployment.yaml
 kubectl create -f taskmanager-deployment.yaml
-kubectl create -f jobmanager-rest-service.yaml
 
+# Also create the REST service so you can submit Flink jobs from outside the cluster 
+kubectl create -f jobmanager-rest-service.yaml
+# Run this to get the NodePort under which you can access Flink
 kubectl get svc flink-jobmanager-rest
 
-./bin/flink run -m <public-node-ip>:<node-port> ./examples/streaming/WordCount.jar
+# Now, you should be able to access the Flink dashboard on your own pc under <public-node-ip>:<node-port>
+# Submit Flink jobs via 
+<path-to-flink-executable> run -m <public-node-ip>:<node-port> <path-to-flink-job-jar> <parameters>
+
+# File paths should be something like hdfs://<name-node-ip>:<name-node-port>/<path-to-file>
+# This is were we ran into trouble, as we never got Flink to connect to HDFS
+# We tried to create a custom container that bundles Flink with the pre-bundled Hadoop provided on their website, 
+# but that also didn't work
